@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.8/jstree.min.js"></script>
+    <script type="text/javascript" src="../build/ols-term-type-treeview.js"></script>
+
+    <link rel="stylesheet" href="../themes/proton/style.css" type="text/css" media="screen" />
+    <script type="text/javascript">
+        var olsTermTypeTreeView;
+         $(document).ready(function() {
+
+            var OLSTermTypeTreeView = require("ols-term-type-treeview");
+
+            //var viewModeElmName = 'ontology_view_selection';
+            // var viewModeQuery = "input[name='" + viewModeElmName + "']:checked";
+            // console.log("viewModeElmName = ", viewModeElmName);
+            // console.log("viewModeQuery = ", viewModeQuery);
+            // var viewMode = $("input[name='" + viewModeElmName + "']:checked").val();
+            // var viewMode =  $("input[name='ontology_view_selection']:checked").val();
+            // console.log("viewMode = ", viewMode);
+            olsTermTypeTreeView = new OLSTermTypeTreeView("http://localhost:8080/ols-boot/", "duo", "#term-tree",
+                "", "terms", true, "ontology_view_selection_id", true);
+
+            console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
+            olsTermTypeTreeView.draw();
+         });
+    </script>
+</head>
+<body>
+<div><h1>Simple Test</h1></div>
+<div id="term-tree"></div>
+<div class="btn-group btn-group-vertical" style="float: right;padding-top:5px;">
+    <input type="radio" id="ontology_view_selection_id" name="ontology_view_selection" value="All" checked="true"
+           onclick="olsTermTypeTreeView.toggleOntologyView(this)">All terms</input><br/>
+    <input type="radio" id="ontology_view_selection_id" name="ontology_view_selection" value="PreferredRoots"
+           onclick="olsTermTypeTreeView.toggleOntologyView(this)">Preferred root terms</input>
+</div>
+
+<div class="btn-group btn-group-vertical" style="float: right;padding-top:5px;">
+    <button class="btn btn-default" value="true" title="Expand the tree to show sibling terms" onclick="olsTermTypeTreeView.toggleSiblings(this)">Show all siblings</button>
+</div>
+
+</body>
+</html>

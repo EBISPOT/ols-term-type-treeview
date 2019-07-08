@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.8/jstree.min.js"></script>
+    <script type="text/javascript" src="../build/ols-term-type-treeview.js"></script>
+    <link rel="stylesheet" href="../themes/proton/style.css" type="text/css" media="screen" />
+
+</head>
+
+<body>
+<div><h1>Simple Test</h1></div>
+<div id="term-tree"></div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        let OLSTermTypeTreeView = require("ols-term-type-treeview");
+
+        let olsTermTypeTreeView = new OLSTermTypeTreeView("https://www.ebi.ac.uk/ols/", "bfo", "#term-tree",
+            "http://purl.obolibrary.org/obo/BFO_0000182", "terms", true, "All", false);
+
+        console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
+        olsTermTypeTreeView.draw();
+    });
+</script>
+
+
+</body>
+</html>
