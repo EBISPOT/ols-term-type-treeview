@@ -7,26 +7,46 @@ $.jstree.defaults.core.data = true;
 $.jstree.defaults.core.expand_selected_onload = true;
 
 
-function OLSTermTypeTreeView(olsIRI, ontology, divId, termIRI, termType, showSiblings, viewModeElmId, saveState) {
+/**
+ *
+ *
+ * @param olsIRI
+ * @param ontology
+ * @param divId
+ * @param termIRI Having termIRI here does not make sense. It should be moved to the draw() method.
+ * @param termType
+ * @param siblingsElm
+ * @param viewModeElm
+ * @param saveState
+ * @constructor
+ */
+function OLSTermTypeTreeView(olsIRI, ontology, divId, termIRI, termType, siblingsElm, viewModeElm, saveState) {
     this.olsIRI = olsIRI;
     this.ontology = ontology;
     this.divId = divId;
     this.termIRI = termIRI;
     this.termType = getUrlType(termType);
-    this.showSiblings = showSiblings;
-    this.viewModeElmId = viewModeElmId;
+    this.siblingsElm = siblingsElm;
+    this.viewModeElm = viewModeElm;
     this.saveState = saveState;
-    this.onClick = _onClick;
 }
 
-function _dataCB(node, cb, relativePath, url, ontology, termIRI, termType, viewMode, saveState, showSiblings) {
-    console.log("Data callback triggered, viewMode = ", viewMode);
+function _dataCB(node, cb, relativePath, url, ontology, termIRI, termType, showSiblings, viewMode, saveState) {
+    console.log("_dataCB, relativePath = ", relativePath);
+    console.log("_dataCB, url = ", url);
+    console.log("_dataCB, ontology = ", ontology);
+    console.log("_dataCB, termType = ", termType);
+    console.log("_dataCB, viewMode = ", viewMode);
+    console.log("_dataCB, showSiblings = ", showSiblings);
+
     var rootUrl = _determineRootURL(relativePath, viewMode, termType, ontology);
 
     url += '?viewMode=' + viewMode;
 
     if (showSiblings) {
         url += '&siblings=true';
+    } else {
+        url += '&siblings=false';
     }
 
     if (node.id === '#' && termIRI !== '') {
@@ -50,7 +70,7 @@ function _dataCB(node, cb, relativePath, url, ontology, termIRI, termType, viewM
 
 OLSTermTypeTreeView.prototype.toString =  function () {
     return "(olsIRI = " + this.olsIRI + ", ontology = " + this.ontology + ", termType = " + this.termType +
-        ", viewMode = " + this.viewMode + ", divId = " + this.divId + ")";
+        ", viewModeElm = " + this.viewModeElm + ", divId = " + this.divId + ")";
 }
 
 function _determineUrl(relativePath, ontology, termType, termIRI) {
@@ -61,27 +81,32 @@ function _determineUrl(relativePath, ontology, termType, termIRI) {
     return url;
 }
 
-OLSTermTypeTreeView.prototype.draw =  function () {
+OLSTermTypeTreeView.prototype.draw =  function (showSiblings, viewMode) {
+    console.log("draw() called");
+
+    console.trace("draw() callstack");
+
+
+    console.log("showSiblings = ", showSiblings);
+    console.log("viewMode = ", viewMode);
+
     var relativePath = this.olsIRI ? this.olsIRI : '';
     var url = _determineUrl(relativePath, this.ontology, this.termType, this.termIRI);
 
     var localTermIRI = this.termIRI;
     var localSaveState = this.saveState;
     var localTermType = this.termType;
-    var localOnClick = this.onClick;
-    var localViewModeElmId = this.viewModeElmId;
     var localOntology = this.ontology;
-    var localShowSiblings = this.showSiblings;
-    // var localTree = $(this).jstree(true);
     var localDivId = this.divId;
+    var localShowSiblingsElm = this.siblingsElm;
+    var localViewModeElm = this.viewModeElm;
 
-    var treeDiv = $(this.divId).jstree({
+    var treeDiv = $(localDivId).jstree({
         'check_callback' : true,
         'core' : {
             'data': function(node, cb) {
-                var viewMode = $("#" + localViewModeElmId + ":checked").val();
-                _dataCB(node, cb, relativePath, url, localOntology, localTermIRI, localTermType, viewMode,
-                    localSaveState, localShowSiblings);
+                _dataCB(node, cb, relativePath, url, localOntology, localTermIRI, localTermType, showSiblings, viewMode,
+                    localSaveState);
             },
             "themes": {
                 "dots": true
@@ -96,13 +121,13 @@ OLSTermTypeTreeView.prototype.draw =  function () {
         var iri  = selected.node.original.iri ? selected.node.original.iri : selected.node.original.a_attr.iri;
         var ontology =  selected.node.original.ontology_name ? selected.node.original.ontology_name :
             selected.node.original.a_attr.ontology_name;
-        var viewMode = $("#" + localViewModeElmId + ":checked").val();
-
-        if (localSaveState) {
+        var showSiblings = $("button[name='" + localShowSiblingsElm + "']").val() == 'true';
+        var viewMode = $("input[name='" + localViewModeElm + "']:checked").val();
+        if (this.saveState) {
             $.jStorage.set(iri, data);
         }
-        localOnClick.call(this, event, selected, relativePath, localTermIRI, localTermType, iri, ontology, viewMode,
-            localShowSiblings);
+        _onClick.call(this, event, selected, relativePath, localTermIRI, localTermType, iri, ontology, showSiblings,
+            viewMode);
     }).bind('after_close.jstree', function (e, data) {
         var tree = $(localDivId).jstree(true).get_json();
         tree.delete_node(data.node.children);
@@ -130,8 +155,8 @@ function _determineRootURL(relativePath, viewMode, termType, ontology) {
     return rootUrl;
 }
 
-OLSTermTypeTreeView.prototype.toggleOntologyView=function(elm){
-    var viewMode = $(elm).val();
+OLSTermTypeTreeView.prototype.toggleOntologyView=function(){
+    var viewMode = $("input[name='" + this.viewModeElm + "']:checked").val();
 
     console.log("toggleOntologyView viewMode = ", viewMode);
 
@@ -142,30 +167,36 @@ OLSTermTypeTreeView.prototype.toggleOntologyView=function(elm){
     var localSaveState = this.saveState;
     var localTermType = this.termType;
     var localOntology = this.ontology;
-    var showSiblings = this.showSiblings;
 
+    var showSiblings = $("button[name='" + this.siblingsElm + "']").val() == 'true';
+
+    // globalShowSiblings = showSiblings;
     $(this.divId).jstree(true).settings.core.data = function(node, cb){
-        _dataCB(node, cb, relativePath, url, localOntology, localTermIRI, localTermType, viewMode,
-            localSaveState, showSiblings);
+        _dataCB(node, cb, relativePath, url, localOntology, localTermIRI, localTermType, showSiblings, viewMode,
+            localSaveState);
     };
+    // globalViewMode = viewMode;
     $(this.divId).jstree(true).refresh();
 }
 
 
-OLSTermTypeTreeView.prototype.toggleSiblings=function(elm) {
-    var buttonValue = $(elm).val() == 'true';
-    var localShowSiblings = this.showSiblings;
+OLSTermTypeTreeView.prototype.toggleSiblings=function() {
+    console.log("toggleSiblings() called.");
 
-    if (buttonValue) {
-        this.showSiblings = false;
-        $(elm).text("Hide siblings");
-        $(elm).val(false);
+    var showSiblings = $("button[name='" + this.siblingsElm + "']").val() == 'true';
+
+    console.log("toggleSiblings() showSiblings = ", showSiblings);
+
+    showSiblings = !(showSiblings);
+    if (showSiblings) {
+        $("button[name='" + this.siblingsElm + "']").text("Hide siblings");
     }
     else {
-        this.showSiblings = true;
-        $(elm).text("Show siblings");
-        $(elm).val(true);
+        $("button[name='" + this.siblingsElm + "']").text("Show all siblings");
     }
+    $("button[name='" + this.siblingsElm + "']").val(showSiblings);
+
+
 
     var relativePath = this.olsIRI ? this.olsIRI : '';
     var url = _determineUrl(relativePath, this.ontology, this.termType, this.termIRI);
@@ -173,15 +204,10 @@ OLSTermTypeTreeView.prototype.toggleSiblings=function(elm) {
     var localTermIRI = this.termIRI;
     var localSaveState = this.saveState;
     var localTermType = this.termType;
-    var localViewMode = this.viewMode;
     var localOntology = this.ontology;
 
-    $(this.divId).jstree(true).settings.core.data = function(node, cb){
-        _dataCB(node, cb, relativePath, url, localOntology, localTermIRI, localTermType, localViewMode,
-            localSaveState, localShowSiblings);
-    };
     $(this.divId).jstree(true).refresh();
-    // this.draw();
+    // location.reload();
 }
 
 
@@ -287,7 +313,9 @@ function getUrlType (termType) {
 }
 
 
-function _onClick(node, event, relativePath, currentTermIri, termType, selectedIri, ontology_name, viewMode, showSiblings){
+function _onClick(node, event, relativePath, currentTermIri, termType, selectedIri, ontology_name, showSiblings, viewMode){
+    console.log("showSiblings = ", showSiblings);
+    console.log("viewMode = ", viewMode);
     var type = termType;
     if (type == 'individuals' && termIri != selectedIri) {
         type = getUrlType('terms');

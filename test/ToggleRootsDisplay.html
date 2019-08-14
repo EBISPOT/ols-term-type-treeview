@@ -13,15 +13,9 @@
 
             var OLSTermTypeTreeView = require("ols-term-type-treeview");
 
-            //var viewModeElmName = 'ontology_view_selection';
-            // var viewModeQuery = "input[name='" + viewModeElmName + "']:checked";
-            // console.log("viewModeElmName = ", viewModeElmName);
-            // console.log("viewModeQuery = ", viewModeQuery);
-            // var viewMode = $("input[name='" + viewModeElmName + "']:checked").val();
-            // var viewMode =  $("input[name='ontology_view_selection']:checked").val();
-            // console.log("viewMode = ", viewMode);
+             // olsIRI, ontology, divId, termIRI, termType, siblingsElmId, viewModeElm, saveState
             olsTermTypeTreeView = new OLSTermTypeTreeView("http://localhost:8080/ols-boot/", "duo", "#term-tree",
-                "", "terms", true, "ontology_view_selection_id", true);
+                "", "terms", "", "ontology_view_selection", true);
 
             console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
             olsTermTypeTreeView.draw();
@@ -32,10 +26,10 @@
 <div><h1>Simple Test</h1></div>
 <div id="term-tree"></div>
 <div class="btn-group btn-group-vertical" style="float: right;padding-top:5px;">
-    <input type="radio" id="ontology_view_selection_id" name="ontology_view_selection" value="All" checked="true"
-           onclick="olsTermTypeTreeView.toggleOntologyView(this)">All terms</input><br/>
-    <input type="radio" id="ontology_view_selection_id" name="ontology_view_selection" value="PreferredRoots"
-           onclick="olsTermTypeTreeView.toggleOntologyView(this)">Preferred root terms</input>
+    <input type="radio" id="ontology_view_selection_id1" name="ontology_view_selection" value="All" checked="true"
+           onclick="olsTermTypeTreeView.toggleOntologyView()">All terms</input><br/>
+    <input type="radio" id="ontology_view_selection_id2" name="ontology_view_selection" value="PreferredRoots"
+           onclick="olsTermTypeTreeView.toggleOntologyView()">Preferred root terms</input>
 </div>
 
 <div class="btn-group btn-group-vertical" style="float: right;padding-top:5px;">

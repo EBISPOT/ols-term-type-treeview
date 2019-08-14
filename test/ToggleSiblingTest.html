@@ -8,25 +8,55 @@
     <link rel="stylesheet" href="../themes/proton/style.css" type="text/css" media="screen" />
 </head>
 
-<body>
-<div><h1>Simple Test</h1></div>
-<button class="btn btn-default" value="true" title="Expand the tree to show sibling terms"
-        onclick="olsTermTypeTreeView.toggleSiblings(this)">Show all siblings</button>
-<div id="term-tree"></div>
-
 <script type="text/javascript">
     var olsTermTypeTreeView;
     $(document).ready(function() {
 
         var OLSTermTypeTreeView = require("ols-term-type-treeview");
 
-        olsTermTypeTreeView = new OLSTermTypeTreeView("https://www.ebi.ac.uk/ols/", "bfo", "#term-tree",
-            "http://purl.obolibrary.org/obo/BFO_0000182", "terms", true, "All", false);
+        // olsIRI, ontology, divId, termIRI, termType, siblingsElmId, viewModeElm, saveState
+        olsTermTypeTreeView = new OLSTermTypeTreeView("http://localhost:8080/ols-boot/", "duo", "#term-tree",
+            "http://purl.obolibrary.org/obo/DUO_0000025", "terms", "siblingsButton", "ontology_view_selection", false);
 
         console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
         olsTermTypeTreeView.draw();
     });
+
+    function toggle(elm) {
+        var showSiblings = $("button[name='siblingsButton']").val() == 'true';
+
+        console.log("toggleSiblings() showSiblings = ", showSiblings);
+
+        showSiblings = !(showSiblings);
+        if (showSiblings) {
+            $("button[name='siblingsButton']").text("Hide siblings");
+        }
+        else {
+            $("button[name='siblingsButton']").text("Show siblings");
+        }
+        $("button[name='siblingsButton']").val(showSiblings);
+    }
 </script>
+
+<body>
+<div><h1>Simple Test</h1></div>
+<!--<button class="btn btn-default" id="siblings_id" title="Expand the tree to show sibling terms"-->
+<!--        onclick="alert('toggleSiblings()')">Show all siblings</button>-->
+<!--<button class="btn btn-default" id="siblings_id" title="Expand the tree to show sibling terms"-->
+<!--        onclick="toggle(this)">Show all siblings</button>-->
+<!--<div>-->
+<button class="btn btn-default" name="siblingsButton" title="Expand the tree to show sibling terms"
+        onclick="toggle()">Show all siblings</button>
+<!--</div>-->
+<div class="btn-group btn-group-vertical" style="float: right;padding-top:5px;">
+    <input type="radio" id="ontology_view_selection_id1" name="ontology_view_selection" value="All" checked="true"
+           onclick="olsTermTypeTreeView.toggleOntologyView()">All terms</input><br/>
+    <input type="radio" id="ontology_view_selection_id2" name="ontology_view_selection" value="PreferredRoots"
+           onclick="olsTermTypeTreeView.toggleOntologyView()">Preferred root terms</input>
+</div>
+<div id="term-tree"></div>
+
+
 
 
 </body>

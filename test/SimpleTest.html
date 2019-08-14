@@ -18,8 +18,9 @@
 
         let OLSTermTypeTreeView = require("ols-term-type-treeview");
 
+        // olsIRI, ontology, divId, termIRI, termType, siblingsElmId, viewModeElm, saveState
         let olsTermTypeTreeView = new OLSTermTypeTreeView("https://www.ebi.ac.uk/ols/", "bfo", "#term-tree",
-            "http://purl.obolibrary.org/obo/BFO_0000182", "terms", true, "All", false);
+            "http://purl.obolibrary.org/obo/BFO_0000182", "terms", "", "", false);
 
         console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
         olsTermTypeTreeView.draw();
