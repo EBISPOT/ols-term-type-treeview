@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.8/jstree.min.js"></script>
     <script type="text/javascript" src="../build/ols-term-type-treeview.js"></script>
     <link rel="stylesheet" href="../themes/proton/style.css" type="text/css" media="screen" />
@@ -13,13 +13,16 @@
     $(document).ready(function() {
 
         var OLSTermTypeTreeView = require("ols-term-type-treeview");
-
+        console.log("Require works 1");
         // olsIRI, ontology, divId, termIRI, termType, siblingsElmId, viewModeElm, saveState
         olsTermTypeTreeView = new OLSTermTypeTreeView("http://localhost:8080/ols-boot/", "duo", "#term-tree",
             "http://purl.obolibrary.org/obo/DUO_0000025", "terms", "siblingsButton", "ontology_view_selection", false);
 
         console.log("olsTermTypeTreeView = ", olsTermTypeTreeView);
-        olsTermTypeTreeView.draw();
+        var showSiblings = $("button[name='siblingsButton']").val() == 'true';
+
+        var viewMode = $("input[name='ontology_view_selection']:checked").val();
+        olsTermTypeTreeView.draw(showSiblings, viewMode);
     });
 
     function toggle(elm) {
